@@ -26,9 +26,6 @@ const reportFormSchema = z.object({
     message: "La description doit contenir au moins 10 caractères",
   }),
   date: z.string(),
-  location: z.string().optional(),
-  witnesses: z.string().optional(),
-  additionalInfo: z.string().optional(),
 });
 
 type ReportFormValues = z.infer<typeof reportFormSchema>;
@@ -76,14 +73,13 @@ const ReportForm = () => {
             <div>
               <h4 className="font-medium text-warning mb-1">Important</h4>
               <p className="text-sm text-muted-foreground">
-                Ce formulaire est destiné à signaler tout comportement qui pourrait indiquer un cas de harcèlement scolaire. 
-                Vos observations sont précieuses pour la détection précoce.
+                Ce formulaire est destiné à signaler tout comportement qui pourrait indiquer un cas de harcèlement scolaire.
               </p>
             </div>
           </div>
           
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <FormField
                   control={form.control}
@@ -128,50 +124,45 @@ const ReportForm = () => {
                 />
               </div>
 
-              <div className="grid gap-4 md:grid-cols-2">
-                <FormField
-                  control={form.control}
-                  name="reportType"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Type de signalement</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Sélectionner un type" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="physical">Agression physique</SelectItem>
-                          <SelectItem value="verbal">Agression verbale</SelectItem>
-                          <SelectItem value="social">Isolement social</SelectItem>
-                          <SelectItem value="cyber">Cyber-harcèlement</SelectItem>
-                          <SelectItem value="behavior">Changement de comportement</SelectItem>
-                          <SelectItem value="other">Autre préoccupation</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormDescription>
-                        Sélectionnez la catégorie qui correspond le mieux
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="date"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Date de l'observation</FormLabel>
+              <FormField
+                control={form.control}
+                name="reportType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Type de signalement</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <Input type="date" {...field} />
+                        <SelectTrigger>
+                          <SelectValue placeholder="Sélectionner un type" />
+                        </SelectTrigger>
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+                      <SelectContent>
+                        <SelectItem value="physical">Agression physique</SelectItem>
+                        <SelectItem value="verbal">Agression verbale</SelectItem>
+                        <SelectItem value="social">Isolement social</SelectItem>
+                        <SelectItem value="cyber">Cyber-harcèlement</SelectItem>
+                        <SelectItem value="behavior">Changement de comportement</SelectItem>
+                        <SelectItem value="other">Autre préoccupation</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Date de l'observation</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <FormField
                 control={form.control}
@@ -194,53 +185,7 @@ const ReportForm = () => {
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="location"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Lieu</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Où s'est déroulé l'incident ? (facultatif)" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="witnesses"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Témoins éventuels</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Y a-t-il eu des témoins ? (facultatif)" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="additionalInfo"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Informations complémentaires</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Tout autre élément pertinent... (facultatif)"
-                        className="min-h-[80px]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="flex flex-col sm:flex-row gap-3 pt-2">
+              <div className="flex flex-col sm:flex-row gap-3 pt-4">
                 <Link to="/">
                   <Button variant="outline" className="w-full sm:w-auto">
                     Annuler

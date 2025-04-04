@@ -11,6 +11,8 @@ import ClassDetail from "./pages/ClassDetail";
 import Students from "./pages/Students";
 import StudentProfile from "./pages/StudentProfile";
 import ReportForm from "./pages/ReportForm";
+import Reports from "./pages/Reports";
+import Statistics from "./pages/Statistics";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +31,8 @@ const App = () => (
             <Route path="/eleves" element={<Students />} />
             <Route path="/eleves/:id" element={<StudentProfile />} />
             <Route path="/signalements" element={<ReportForm />} />
+            <Route path="/rapports" element={<Reports />} />
+            <Route path="/statistiques" element={<Statistics />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
