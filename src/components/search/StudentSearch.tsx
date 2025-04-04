@@ -1,10 +1,20 @@
 
 import { useState, useEffect } from "react";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { CheckIcon, Search, ChevronsUpDown } from "lucide-react";
+import { CheckIcon, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { 
+  Command, 
+  CommandEmpty, 
+  CommandGroup, 
+  CommandInput, 
+  CommandItem 
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 // Sample data for students - this would come from an API in a real app
 const studentsData = [
@@ -29,7 +39,7 @@ type StudentSearchProps = {
 
 const StudentSearch = ({ onSelect, placeholder = "Rechercher un élève..." }: StudentSearchProps) => {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
+  const [selectedValue, setSelectedValue] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredStudents, setFilteredStudents] = useState(studentsData);
 
@@ -47,7 +57,7 @@ const StudentSearch = ({ onSelect, placeholder = "Rechercher un élève..." }: S
     }
   }, [searchQuery]);
 
-  const selectedStudent = studentsData.find(student => student.id === value);
+  const selectedStudent = studentsData.find(student => student.id === selectedValue);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -75,16 +85,19 @@ const StudentSearch = ({ onSelect, placeholder = "Rechercher un élève..." }: S
               <CommandItem
                 key={student.id}
                 value={student.id}
-                onSelect={() => {
-                  setValue(student.id);
-                  onSelect(student);
+                onSelect={(currentValue) => {
+                  setSelectedValue(currentValue);
+                  const selected = studentsData.find(s => s.id === currentValue);
+                  if (selected) {
+                    onSelect(selected);
+                  }
                   setOpen(false);
                 }}
               >
                 <CheckIcon
                   className={cn(
                     "mr-2 h-4 w-4",
-                    value === student.id ? "opacity-100" : "opacity-0"
+                    selectedValue === student.id ? "opacity-100" : "opacity-0"
                   )}
                 />
                 <div className="flex flex-col">

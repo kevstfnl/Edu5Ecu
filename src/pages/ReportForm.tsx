@@ -103,7 +103,6 @@ const ReportForm = () => {
           
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              
               <div className="bg-muted/50 p-4 rounded-lg mb-2">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-base font-medium">Identification de l'élève</h3>
