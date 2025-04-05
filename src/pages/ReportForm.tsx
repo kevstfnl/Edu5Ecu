@@ -1,3 +1,4 @@
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -10,14 +11,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/components/ui/use-toast";
 import { AlertTriangle, FileText } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
-import StudentSearch from "@/components/search/StudentSearch";
 
 const reportFormSchema = z.object({
   studentName: z.string().min(2, {
     message: "Le nom de l'élève doit contenir au moins 2 caractères",
-  }).optional(),
-  studentClass: z.string().optional(),
+  }),
+  studentClass: z.string({
+    required_error: "Veuillez sélectionner une classe",
+  }),
   reportType: z.string({
     required_error: "Veuillez sélectionner un type de signalement",
   }),
@@ -25,6 +26,9 @@ const reportFormSchema = z.object({
     message: "La description doit contenir au moins 10 caractères",
   }),
   date: z.string(),
+  location: z.string().optional(),
+  witnesses: z.string().optional(),
+  additionalInfo: z.string().optional(),
 });
 
 type ReportFormValues = z.infer<typeof reportFormSchema>;
@@ -35,33 +39,11 @@ const defaultValues: Partial<ReportFormValues> = {
 
 const ReportForm = () => {
   const { toast } = useToast();
-  const [searchMode, setSearchMode] = useState(true);
-  const [selectedStudent, setSelectedStudent] = useState<{id: string; name: string; classroom: string} | null>(null);
   
   const form = useForm<ReportFormValues>({
     resolver: zodResolver(reportFormSchema),
     defaultValues,
   });
-
-  const handleStudentSelect = (student: {id: string; name: string; classroom: string}) => {
-    setSelectedStudent(student);
-    form.setValue("studentName", student.name);
-    form.setValue("studentClass", student.classroom);
-  };
-
-  const toggleSearchMode = () => {
-    setSearchMode(!searchMode);
-    if (!searchMode) {
-      // Switching back to search mode, clear manual inputs
-      if (!selectedStudent) {
-        form.setValue("studentName", "");
-        form.setValue("studentClass", "");
-      }
-    } else {
-      // Switching to manual mode, keep values from selected student if any
-      setSelectedStudent(null);
-    }
-  };
 
   function onSubmit(data: ReportFormValues) {
     toast({
@@ -70,8 +52,6 @@ const ReportForm = () => {
     });
     console.log(data);
     form.reset();
-    setSelectedStudent(null);
-    setSearchMode(true);
   }
 
   return (
@@ -96,117 +76,102 @@ const ReportForm = () => {
             <div>
               <h4 className="font-medium text-warning mb-1">Important</h4>
               <p className="text-sm text-muted-foreground">
-                Ce formulaire est destiné à signaler tout comportement qui pourrait indiquer un cas de harcèlement scolaire.
+                Ce formulaire est destiné à signaler tout comportement qui pourrait indiquer un cas de harcèlement scolaire. 
+                Vos observations sont précieuses pour la détection précoce.
               </p>
             </div>
           </div>
           
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <div className="bg-muted/50 p-4 rounded-lg mb-2">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-base font-medium">Identification de l'élève</h3>
-                  <Button type="button" variant="ghost" onClick={toggleSearchMode} className="text-xs h-8">
-                    {searchMode ? "Saisie manuelle" : "Rechercher un élève"}
-                  </Button>
-                </div>
-                
-                {searchMode ? (
-                  <div className="mb-4">
-                    <FormLabel className="mb-2 block">Rechercher un élève</FormLabel>
-                    <StudentSearch onSelect={handleStudentSelect} />
-                    {selectedStudent && (
-                      <p className="text-sm text-muted-foreground mt-2">
-                        Élève sélectionné: <span className="font-medium">{selectedStudent.name}</span> ({selectedStudent.classroom})
-                      </p>
-                    )}
-                  </div>
-                ) : (
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <FormField
-                      control={form.control}
-                      name="studentName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Nom de l'élève concerné</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Nom et prénom" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <div className="grid gap-4 md:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="studentName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nom de l'élève concerné</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Nom et prénom" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                    <FormField
-                      control={form.control}
-                      name="studentClass"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Classe</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Sélectionner une classe" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="6A">6ème A</SelectItem>
-                              <SelectItem value="6B">6ème B</SelectItem>
-                              <SelectItem value="5A">5ème A</SelectItem>
-                              <SelectItem value="5B">5ème B</SelectItem>
-                              <SelectItem value="4A">4ème A</SelectItem>
-                              <SelectItem value="4B">4ème B</SelectItem>
-                              <SelectItem value="3A">3ème A</SelectItem>
-                              <SelectItem value="3B">3ème B</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                )}
+                <FormField
+                  control={form.control}
+                  name="studentClass"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Classe</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionner une classe" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="6A">6ème A</SelectItem>
+                          <SelectItem value="6B">6ème B</SelectItem>
+                          <SelectItem value="5A">5ème A</SelectItem>
+                          <SelectItem value="5B">5ème B</SelectItem>
+                          <SelectItem value="4A">4ème A</SelectItem>
+                          <SelectItem value="4B">4ème B</SelectItem>
+                          <SelectItem value="3A">3ème A</SelectItem>
+                          <SelectItem value="3B">3ème B</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
 
-              <FormField
-                control={form.control}
-                name="reportType"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Type de signalement</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Sélectionner un type" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="physical">Agression physique</SelectItem>
-                        <SelectItem value="verbal">Agression verbale</SelectItem>
-                        <SelectItem value="social">Isolement social</SelectItem>
-                        <SelectItem value="cyber">Cyber-harcèlement</SelectItem>
-                        <SelectItem value="behavior">Changement de comportement</SelectItem>
-                        <SelectItem value="other">Autre préoccupation</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="grid gap-4 md:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="reportType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Type de signalement</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionner un type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="physical">Agression physique</SelectItem>
+                          <SelectItem value="verbal">Agression verbale</SelectItem>
+                          <SelectItem value="social">Isolement social</SelectItem>
+                          <SelectItem value="cyber">Cyber-harcèlement</SelectItem>
+                          <SelectItem value="behavior">Changement de comportement</SelectItem>
+                          <SelectItem value="other">Autre préoccupation</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>
+                        Sélectionnez la catégorie qui correspond le mieux
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="date"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Date de l'observation</FormLabel>
-                    <FormControl>
-                      <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="date"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Date de l'observation</FormLabel>
+                      <FormControl>
+                        <Input type="date" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               <FormField
                 control={form.control}
@@ -229,7 +194,53 @@ const ReportForm = () => {
                 )}
               />
 
-              <div className="flex flex-col sm:flex-row gap-3 pt-4">
+              <FormField
+                control={form.control}
+                name="location"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Lieu</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Où s'est déroulé l'incident ? (facultatif)" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="witnesses"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Témoins éventuels</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Y a-t-il eu des témoins ? (facultatif)" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="additionalInfo"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Informations complémentaires</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Tout autre élément pertinent... (facultatif)"
+                        className="min-h-[80px]"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex flex-col sm:flex-row gap-3 pt-2">
                 <Link to="/">
                   <Button variant="outline" className="w-full sm:w-auto">
                     Annuler
