@@ -28,7 +28,7 @@ const Header = ({ toggleSidebar }: HeaderProps) => {
             <Menu className="h-5 w-5" />
           </Button>
           <h1 className="text-lg font-medium hidden md:block">
-            Garde et Protection
+            Edu5ecu
           </h1>
         </div>
         <div className="flex items-center space-x-2">

@@ -17,7 +17,7 @@ interface SidebarProps {
 
 const Sidebar = ({ open }: SidebarProps) => {
   const location = useLocation();
-  
+
   const navItems = [
     {
       name: "Tableau de bord",
@@ -61,17 +61,16 @@ const Sidebar = ({ open }: SidebarProps) => {
       <div className="flex flex-col h-full">
         <div className="flex items-center justify-center h-16 border-b border-sidebar-border">
           <Link to="/" className="flex items-center">
-            <div className="bg-white rounded-full p-1 flex items-center justify-center">
-              <AlertTriangle className="h-6 w-6 text-primary" />
+            <div className="p-1 flex items-center justify-center">
+              {open ? (
+                <span className="ml-2 text-lg font-bold text-white max-h-8"><img src="/1.svg" className="max-h-11" alt="Logo" /></span>
+              ) : (
+                <span className="ml-2 text-lg font-bold text-white max-h-8"><img src="/2.svg" className="max-h-9" alt="Logo" /></span>
+              )}
             </div>
-            {open && (
-              <span className="ml-2 text-lg font-bold text-white">
-                Garde&Prot
-              </span>
-            )}
           </Link>
         </div>
-        
+
         <nav className="flex-1 py-4 overflow-y-auto">
           <ul className="space-y-1 px-2">
             {navItems.map((item) => (
@@ -90,7 +89,7 @@ const Sidebar = ({ open }: SidebarProps) => {
             ))}
           </ul>
         </nav>
-        
+
         <div className="p-4 border-t border-sidebar-border">
           <div
             className={cn(
